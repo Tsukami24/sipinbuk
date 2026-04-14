@@ -44,8 +44,16 @@
         <li class="nav-item">
             <a href="{{ route('admin.borrows.index') }}"
                class="nav-link {{ request()->routeIs('admin.borrows.*') ? 'active' : '' }}">
-                <i class="bi bi-book me-2"></i>
+                <i class="bi bi-arrow-left-right me-2"></i>
                 Peminjaman
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('admin.classrooms.index') }}"
+               class="nav-link {{ request()->routeIs('admin.classrooms.*') ? 'active' : '' }}">
+                <i class="bi bi-easel2 me-2"></i>
+                Kelas
             </a>
         </li>
 

@@ -12,6 +12,7 @@ class BorrowDetail extends Model
         'borrow_id',
         'book_item_id',
         'returned_at',
+        'return_requested',
         'return_condition',
     ];
 

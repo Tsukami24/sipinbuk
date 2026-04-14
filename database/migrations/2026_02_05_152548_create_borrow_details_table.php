@@ -24,6 +24,8 @@ return new class extends Migration
 
             $table->date('returned_at')->nullable();
 
+            $table->boolean('return_requested')->default(false);
+
             $table->enum('return_condition', ['good', 'damaged', 'lost'])
                 ->nullable();
 

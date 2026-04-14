@@ -1,13 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\Admin\BookController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookItemController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\SubcategoryController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BorrowController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('user.home');
@@ -48,9 +49,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.dashboard');
     })->name('dashboard');
 
-    // List And Delete User
-    Route::resource('users', UserController::class)
-        ->only(['index', 'create', 'store', 'destroy']);
+    // Routes Crud User
+    Route::resource('users', UserController::class);
+
+    // Routes Crud Classroom
+    Route::resource('classrooms', ClassroomController::class);
 
     // Routes Crud Category
     Route::resource('categories', CategoryController::class);
@@ -87,6 +90,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth'])->group(function () {
 
+    // Routes Borrow Transaction
     Route::get('/borrows/create', [BorrowController::class, 'create'])
         ->name('borrows.create');
 
@@ -98,4 +102,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/borrows/history/{borrow}', [BorrowController::class, 'historyShow'])
         ->name('borrows.history.show');
+
+    Route::post('/borrow-details/{detail}/request-return', [BorrowController::class, 'requestReturn'])
+        ->name('user.borrow.requestReturn');
 });

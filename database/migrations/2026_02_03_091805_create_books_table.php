@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('category_id')
-                ->constrained()
+                ->constrained('categories')
                 ->cascadeOnDelete();
 
             $table->foreignId('subcategory_id')
-                ->constrained()
+                ->constrained('subcategories')
                 ->cascadeOnDelete();
 
             $table->string('title');
-            $table->text('cover')->nullable(); 
+            $table->text('cover')->nullable();
             $table->string('author');
             $table->string('publisher');
             $table->year('year');

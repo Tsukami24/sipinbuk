@@ -22,12 +22,10 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'email',
-        'phone',
+        'nis',
+        'classroom_id',
         'password',
         'role',
-        'otp',
-        'otp_expires_at'
     ];
 
     /**
@@ -56,5 +54,10 @@ class User extends Authenticatable
     public function borrows()
     {
         return $this->hasMany(Borrow::class);
+    }
+
+    public function classroom()
+    {
+        return $this->belongsTo(Classroom::class);
     }
 }

@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('book_items', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('book_id')
-                ->constrained('books')
-                ->cascadeOnDelete();
+            $table->foreignId('book_id')->constrained('books')->cascadeOnDelete();
 
             $table->string('book_code')->unique();
 

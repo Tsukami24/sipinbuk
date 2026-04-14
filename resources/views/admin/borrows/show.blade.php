@@ -73,11 +73,23 @@
                                     <td>{{ $item->bookItem->book->title }}</td>
                                     <td>{{ $item->bookItem->book_code }}</td>
                                     <td>
-                                        @if (!$item->returned_at)
+
+                                        {{-- BELUM REQUEST --}}
+                                        @if (!$item->return_requested && !$item->returned_at)
+                                            <span class="badge bg-secondary mb-2 d-block">
+                                                Belum diajukan
+                                            </span>
+                                        @endif
+
+                                        {{-- SUDAH REQUEST --}}
+                                        @if ($item->return_requested && !$item->returned_at)
+                                            <span class="badge bg-warning mb-2 d-block">
+                                                Permintaan Pengembalian
+                                            </span>
+
                                             <form method="POST" action="{{ route('admin.borrows.return', $borrow->id) }}">
                                                 @csrf
 
-                                                {{-- hidden untuk id detail --}}
                                                 <input type="hidden" name="details[0][id]" value="{{ $item->id }}">
                                                 <input type="hidden" name="details[0][condition]"
                                                     id="conditionInput-{{ $item->id }}" required>
@@ -111,11 +123,17 @@
                                                     </ul>
                                                 </div>
 
-                                                <button class="btn btn-success btn-sm mt-2 w-100">Return</button>
+                                                <button class="btn btn-success btn-sm mt-2 w-100">
+                                                    Return
+                                                </button>
                                             </form>
-                                        @else
-                                            <span class="badge bg-success">Returned</span>
                                         @endif
+
+                                        {{-- SUDAH RETURN --}}
+                                        @if ($item->returned_at)
+                                            <span class="badge bg-success">Dikembalikan</span>
+                                        @endif
+
                                     </td>
                                 </tr>
                             @endforeach

@@ -156,8 +156,8 @@
                                 @csrf
 
                                 <div class="form-outline">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control" required>
+                                    <label class="form-label">NISN</label>
+                                    <input type="text" name="login" class="form-control" required>
                                 </div>
 
                                 <div class="form-outline">
@@ -165,20 +165,16 @@
                                     <input type="password" name="password" class="form-control" required>
                                 </div>
 
-                                <div class="d-flex justify-content-end mb-2">
+                                {{-- <div class="d-flex justify-content-end mb-2">
                                     <a href="{{ route('password.request') }}" style="font-size:0.8rem;">
                                         Lupa Password?
                                     </a>
-                                </div>
+                                </div> --}}
 
                                 <button type="submit" class="btn btn-primary w-100 mt-2">
                                     Login
                                 </button>
 
-                                <p class="text-center mt-3 mb-0" style="font-size:0.85rem;">
-                                    Belum punya akun?
-                                    <a href="{{ route('register') }}">Register</a>
-                                </p>
                             </form>
 
                         </div>

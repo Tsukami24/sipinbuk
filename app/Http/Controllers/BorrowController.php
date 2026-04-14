@@ -119,94 +119,116 @@ class BorrowController extends Controller
             ->with('success', 'Peminjaman berhasil diproses!');
     }
 
-    // ADMIN - PROSES RETURN
-    public function processReturn(Request $request, Borrow $borrow)
-    {
+        public function requestReturn($detailId)
+        {
+            $detail = \App\Models\BorrowDetail::findOrFail($detailId);
 
-        if ($request->has('condition') && !$request->has('details')) {
-            $request->merge([
-                'details' => [
-                    [
-                        'id' => $request->route('detail') ?? null,
-                        'condition' => $request->condition,
-                    ]
-                ]
+            // Pastikan milik user yang login
+            if ($detail->borrow->user_id !== Auth::id()) {
+                abort(403);
+            }
+
+            // Cegah double request
+            if ($detail->return_requested || $detail->returned_at) {
+                return back()->with('error', 'Pengembalian sudah diajukan.');
+            }
+
+            $detail->update([
+                'return_requested' => true
             ]);
+
+            return back()->with('success', 'Pengembalian berhasil diajukan');
         }
 
-        $request->validate([
-            'details' => 'required|array|min:1',
-            'details.*.id' => 'required|exists:borrow_details,id',
-            'details.*.condition' => 'required|in:good,damaged,lost',
-        ]);
+        // ADMIN - PROSES RETURN
+        public function processReturn(Request $request, Borrow $borrow)
+        {
 
-        DB::transaction(function () use ($request, $borrow) {
-
-            $today = Carbon::today();
-            $dueDate = Carbon::parse($borrow->due_date);
-            $lateDays = $today->gt($dueDate) ? $today->diffInDays($dueDate) : 0;
-
-            foreach ($request->details as $itemData) {
-                $detail = $borrow->details()->findOrFail($itemData['id']);
-                $bookItem = $detail->bookItem;
-
-                if ($detail->returned_at) continue;
-
-                $detail->update([
-                    'returned_at' => $today,
-                    'return_condition' => $itemData['condition'],
+            if ($request->has('condition') && !$request->has('details')) {
+                $request->merge([
+                    'details' => [
+                        [
+                            'id' => $request->route('detail') ?? null,
+                            'condition' => $request->condition,
+                        ]
+                    ]
                 ]);
+            }
 
-                switch ($itemData['condition']) {
-                    case 'good':
-                        $bookItem->update(['status' => 'available']);
-                        break;
-                    case 'damaged':
-                        $bookItem->update(['status' => 'damaged']);
-                        Fine::create([
-                            'borrow_id' => $borrow->id,
-                            'borrow_detail_id' => $detail->id,
-                            'fine_type' => 'damage',
-                            'amount' => 20000,
-                            'note' => 'Buku rusak',
-                        ]);
-                        break;
-                    case 'lost':
-                        $bookItem->update(['status' => 'lost']);
-                        Fine::create([
-                            'borrow_id' => $borrow->id,
-                            'borrow_detail_id' => $detail->id,
-                            'fine_type' => 'lost',
-                            'amount' => 100000,
-                            'note' => 'Buku hilang',
-                        ]);
-                        break;
-                }
+            $request->validate([
+                'details' => 'required|array|min:1',
+                'details.*.id' => 'required|exists:borrow_details,id',
+                'details.*.condition' => 'required|in:good,damaged,lost',
+            ]);
 
-                if ($lateDays > 0) {
-                    Fine::create([
-                        'borrow_id' => $borrow->id,
-                        'borrow_detail_id' => $detail->id,
-                        'fine_type' => 'late',
-                        'amount' => $lateDays * 5000,
-                        'note' => "Terlambat {$lateDays} hari",
+            DB::transaction(function () use ($request, $borrow) {
+
+                $today = Carbon::today();
+                $dueDate = Carbon::parse($borrow->due_date);
+                $lateDays = $today->gt($dueDate) ? $today->diffInDays($dueDate) : 0;
+
+                foreach ($request->details as $itemData) {
+                    $detail = $borrow->details()->findOrFail($itemData['id']);
+                    if (!$detail->return_requested) continue;
+                    $bookItem = $detail->bookItem;
+
+                    if ($detail->returned_at) continue;
+
+                    $detail->update([
+                        'returned_at' => $today,
+                        'return_condition' => $itemData['condition'],
                     ]);
+
+                    switch ($itemData['condition']) {
+                        case 'good':
+                            $bookItem->update(['status' => 'available']);
+                            break;
+                        case 'damaged':
+                            $bookItem->update(['status' => 'damaged']);
+                            Fine::create([
+                                'borrow_id' => $borrow->id,
+                                'borrow_detail_id' => $detail->id,
+                                'fine_type' => 'damage',
+                                'amount' => 20000,
+                                'note' => 'Buku rusak',
+                            ]);
+                            break;
+                        case 'lost':
+                            $bookItem->update(['status' => 'lost']);
+                            Fine::create([
+                                'borrow_id' => $borrow->id,
+                                'borrow_detail_id' => $detail->id,
+                                'fine_type' => 'lost',
+                                'amount' => 100000,
+                                'note' => 'Buku hilang',
+                            ]);
+                            break;
+                    }
+
+                    if ($lateDays > 0) {
+                        Fine::create([
+                            'borrow_id' => $borrow->id,
+                            'borrow_detail_id' => $detail->id,
+                            'fine_type' => 'late',
+                            'amount' => $lateDays * 5000,
+                            'note' => "Terlambat {$lateDays} hari",
+                        ]);
+                    }
                 }
-            }
 
-            $hasUnreturned = $borrow->details()->whereNull('returned_at')->exists();
+                $hasUnreturned = $borrow->details()->whereNull('returned_at')->exists();
 
-            if ($hasUnreturned) {
-                $borrow->status = now()->gt($borrow->due_date) ? 'overdue' : 'active';
-            } else {
-                $borrow->status = 'completed';
-            }
+                if ($hasUnreturned) {
+                    $borrow->status = now()->gt($borrow->due_date) ? 'overdue' : 'active';
+                } else {
+                    $borrow->status = 'completed';
+                }
 
-            $borrow->save();
-        });
+                $borrow->save();
+            });
 
-        return back()->with('success', 'Pengembalian berhasil diproses');
-    }
+            return back()->with('success', 'Pengembalian berhasil diproses');
+        }
 
     public function pay(Fine $fine)
     {
