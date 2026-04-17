@@ -21,8 +21,8 @@ return new class extends Migration
             $table->date('borrow_date');
             $table->date('due_date');
 
-            $table->enum('status', ['active', 'completed', 'overdue'])
-                ->default('active');
+            $table->enum('status', ['pending','active','rejected','completed', 'overdue'])
+                ->default('pending');
 
             $table->timestamps();
         });

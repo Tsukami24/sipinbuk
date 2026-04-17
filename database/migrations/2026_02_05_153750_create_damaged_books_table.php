@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('borrow_detail_id')
+                ->nullable()
                 ->constrained('borrow_details')
                 ->cascadeOnDelete();
 

@@ -12,12 +12,15 @@ use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
+
+    // List Books
     public function index()
     {
         $books = Book::with(['category', 'subcategory', 'items'])->get();
         return view('admin.books.index', compact('books'));
     }
 
+    // Show Create Book Form
     public function create()
     {
         return view('admin.books.create', [
@@ -26,6 +29,7 @@ class BookController extends Controller
         ]);
     }
 
+    // Store New Book
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -52,6 +56,7 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil ditambahkan');
     }
 
+    // Show Book Detail
     public function show(Book $book)
     {
         $book->load('items');
@@ -59,6 +64,7 @@ class BookController extends Controller
         return view('admin.books.show', compact('book', 'statuses'));
     }
 
+    // Show Edit Book Form
     public function edit(Book $book)
     {
         return view('admin.books.edit', [
@@ -68,6 +74,7 @@ class BookController extends Controller
         ]);
     }
 
+    // Update Book
     public function update(Request $request, Book $book)
     {
         $validated = $request->validate([
@@ -82,7 +89,7 @@ class BookController extends Controller
         ]);
 
 
-        // ganti cover lama
+        // ganti cover yang lama
         if ($request->hasFile('cover')) {
             if ($book->cover) {
                 Storage::disk('public')->delete($book->cover);
@@ -98,6 +105,7 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil diupdate');
     }
 
+    // Delete Book
     public function destroy(Book $book)
     {
         if ($book->cover) {

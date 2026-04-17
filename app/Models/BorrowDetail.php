@@ -26,6 +26,11 @@ class BorrowDetail extends Model
         return $this->belongsTo(BookItem::class);
     }
 
+    public function damagedBooks()
+    {
+        return $this->hasMany(DamagedBook::class);
+    }
+
     public function fines()
     {
         return $this->hasMany(Fine::class);

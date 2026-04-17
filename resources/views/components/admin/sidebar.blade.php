@@ -45,7 +45,15 @@
             <a href="{{ route('admin.borrows.index') }}"
                class="nav-link {{ request()->routeIs('admin.borrows.*') ? 'active' : '' }}">
                 <i class="bi bi-arrow-left-right me-2"></i>
-                Peminjaman
+                Transaksi
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('admin.damaged-books.index') }}"
+               class="nav-link {{ request()->routeIs('admin.damaged-books.*') ? 'active' : '' }}">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Buku Rusak
             </a>
         </li>
 

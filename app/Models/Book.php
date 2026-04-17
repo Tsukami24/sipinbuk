@@ -19,6 +19,11 @@ class Book extends Model
         'description'
     ];
 
+    public function getStockAttribute()
+    {
+        return $this->items->where('status', 'available')->count();
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

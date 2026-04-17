@@ -15,6 +15,11 @@ class DamagedBook extends Model
         'description',
     ];
 
+    public function bookItem()
+    {
+        return $this->belongsTo(BookItem::class);
+    }
+
     public function borrowDetail()
     {
         return $this->belongsTo(BorrowDetail::class);

@@ -25,6 +25,7 @@
                 <th>Subkategori</th>
                 <th>Penulis</th>
                 <th>Unit</th>
+                <th>Stok</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -47,6 +48,7 @@
                     <td>{{ $book->subcategory->name }}</td>
                     <td>{{ $book->author }}</td>
                     <td>{{ $book->items->count() }}</td>
+                    <td>{{ $book->stock }}</td>
                     <td class="text-center">
                         <div class="dropdown">
                             <button class="btn btn-light btn-sm border" data-bs-toggle="dropdown">

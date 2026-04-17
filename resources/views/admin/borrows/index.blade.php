@@ -6,8 +6,8 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Data Peminjaman</h4>
-            <p class="text-muted mb-0">Manajemen data peminjaman buku</p>
+            <h4 class="fw-bold mb-1">Data Transaksi</h4>
+            <p class="text-muted mb-0">Manajemen data transaksi peminjaman buku</p>
         </div>
     </div>
 
@@ -43,14 +43,16 @@
                     </td>
 
                     <td class="text-center">
-                        @if ($borrow->status === 'active')
+                        @if ($borrow->status === 'pending')
+                            <span class="badge bg-warning text-dark">Menunggu</span>
+                        @elseif ($borrow->status === 'active')
                             <span class="badge bg-primary">Dipinjam</span>
                         @elseif ($borrow->status === 'completed')
                             <span class="badge bg-success">Dikembalikan</span>
                         @elseif ($borrow->status === 'overdue')
                             <span class="badge bg-danger">Terlambat</span>
-                        @else
-                            <span class="badge bg-secondary">{{ $borrow->status }}</span>
+                        @elseif ($borrow->status === 'rejected')
+                            <span class="badge bg-dark">Ditolak</span>
                         @endif
                     </td>
 
@@ -62,11 +64,48 @@
 
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item"
-                                       href="{{ route('admin.borrows.show', $borrow->id) }}">
+                                    <a class="dropdown-item" href="{{ route('admin.borrows.show', $borrow->id) }}">
                                         Detail
                                     </a>
                                 </li>
+
+                                @if ($borrow->status === 'pending')
+                                    <li>
+                                        <form action="{{ route('admin.borrows.updateDueDate', $borrow->id) }}"
+                                            method="POST" class="px-3 py-2">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <input type="date" name="due_date"
+                                                value="{{ $borrow->due_date->format('Y-m-d') }}"
+                                                class="form-control form-control-sm mb-2">
+
+                                            <button class="btn btn-warning btn-sm w-100">
+                                                Ubah Due Date
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
+
+                                @if ($borrow->status === 'pending')
+                                    <li>
+                                        <form action="{{ route('admin.borrows.approve', $borrow->id) }}" method="POST">
+                                            @csrf
+                                            <button class="dropdown-item text-success">
+                                                Terima
+                                            </button>
+                                        </form>
+                                    </li>
+
+                                    <li>
+                                        <form action="{{ route('admin.borrows.reject', $borrow->id) }}" method="POST">
+                                            @csrf
+                                            <button class="dropdown-item text-danger">
+                                                Tolak
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </td>
@@ -79,7 +118,7 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#borrowsTable').DataTable({
                 pageLength: 10,
                 lengthChange: true,

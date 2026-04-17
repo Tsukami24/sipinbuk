@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\BookItemController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ClassroomController;
+use App\Http\Controllers\Admin\DamagedbookController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -74,18 +75,34 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('books/{book}/items/{item}', [BookItemController::class, 'destroy'])
         ->name('books.items.destroy');
 
-    // Routes Borrow Management
+    // Routes Transaksi Management
     Route::get('/borrows', [BorrowController::class, 'index'])
         ->name('borrows.index');
 
     Route::get('/borrows/{borrow}', [BorrowController::class, 'show'])
         ->name('borrows.show');
 
+    Route::patch('/borrows/{borrow}/due-date', [BorrowController::class, 'updateDueDate'])
+        ->name('borrows.updateDueDate');
+
+    Route::post('/borrows/{borrow}/approve', [BorrowController::class, 'approve'])
+        ->name('borrows.approve');
+
+    Route::post('/borrows/{borrow}/reject', [BorrowController::class, 'reject'])
+        ->name('borrows.reject');
+
+    Route::post('/borrows/{borrow}/process-return', [BorrowController::class, 'processReturn'])
+        ->name('borrows.processReturn');
+
     Route::post('/borrows/{borrow}/return',[BorrowController::class, 'processReturn']
     )->name('borrows.return');
 
     Route::patch('/admin/fines/{fine}/pay', [BorrowController::class, 'pay'])
         ->name('fines.pay');
+
+    // Routes Crud Damaged Book
+    Route::resource('damaged-books', DamagedbookController::class)
+        ->only(['index', 'show', 'create', 'store', 'destroy']);
 });
 
 Route::middleware(['auth'])->group(function () {

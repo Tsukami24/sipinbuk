@@ -95,7 +95,6 @@
                                                 </a>
                                             </li>
                                         @endforeach
-
                                     </ul>
                                 </div>
 
@@ -137,14 +136,8 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->book_code }}</td>
                                     <td>
-                                        <span
-                                            class="badge
-                                    {{ $item->status == 'available'
-                                        ? 'bg-success'
-                                        : ($item->status == 'borrowed'
-                                            ? 'bg-warning text-dark'
-                                            : 'bg-danger') }}">
-                                            {{ ucfirst($item->status) }}
+                                        <span class="badge {{ $item->status_badge }}">
+                                            {{ $item->status_label }}
                                         </span>
                                     </td>
                                     <td>
