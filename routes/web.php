@@ -5,15 +5,18 @@ use App\Http\Controllers\Admin\BookItemController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\DamagedbookController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('user.home');
-})->name('user.home');
+    return view('user.landing');
+})->name('user.landing');
 
 // AUTHENTICATION
 Route::get('/login', function () {
@@ -46,9 +49,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
     // Routes Crud User
     Route::resource('users', UserController::class);
@@ -107,9 +109,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth'])->group(function () {
 
+    // User Home
+    Route::get('/home', [HomeController::class, 'index'])
+        ->name('user.home');
+
+    // Routes Book
+    Route::get('/books/{book}', function (\App\Models\Book $book) {
+        return view('user.books.show', compact('book'));
+    })->name('books.show');
+
     // Routes Borrow Transaction
-    Route::get('/borrows/create', [BorrowController::class, 'create'])
+    Route::get('/borrows/create/', [BorrowController::class, 'create'])
         ->name('borrows.create');
+
+    Route::get('/borrows/create/{book}', [BorrowController::class, 'createSingleBook'])
+        ->name('borrows.create.singleBook');
 
     Route::post('/borrows', [BorrowController::class, 'store'])
         ->name('borrows.store');
@@ -122,4 +136,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/borrow-details/{detail}/request-return', [BorrowController::class, 'requestReturn'])
         ->name('user.borrow.requestReturn');
+
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
+        ->name('notifications.readAll');
 });

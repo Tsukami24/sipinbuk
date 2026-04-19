@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\UserNotification;
 
 class BorrowController extends Controller
 {
@@ -70,6 +71,11 @@ class BorrowController extends Controller
         })->get();
 
         return view('user.borrows.create', compact('books'));
+    }
+
+    public function createSingleBook(Book $book)
+    {
+        return view('user.borrows.create-single', compact('book'));
     }
 
     // USER - STORE BORROW
@@ -140,6 +146,13 @@ class BorrowController extends Controller
             ]);
         });
 
+        $borrow->user->notify(new UserNotification([
+            'type' => 'borrow_approved',
+            'title' => 'Peminjaman Disetujui',
+            'message' => 'Peminjaman kamu telah disetujui',
+            'borrow_id' => $borrow->id
+        ]));
+
         return back()->with('success', 'Peminjaman disetujui');
     }
 
@@ -149,6 +162,13 @@ class BorrowController extends Controller
         $borrow->update([
             'status' => 'rejected'
         ]);
+
+        $borrow->user->notify(new UserNotification([
+            'type' => 'borrow_rejected',
+            'title' => 'Peminjaman Ditolak',
+            'message' => 'Peminjaman kamu ditolak',
+            'borrow_id' => $borrow->id
+        ]));
 
         return back()->with('success', 'Peminjaman ditolak');
     }
@@ -194,7 +214,6 @@ class BorrowController extends Controller
     // ADMIN - PROSES RETURN
     public function processReturn(Request $request, Borrow $borrow)
     {
-
         if ($request->has('condition') && !$request->has('details')) {
             $request->merge([
                 'details' => [
@@ -210,20 +229,29 @@ class BorrowController extends Controller
             'details' => 'required|array|min:1',
             'details.*.id' => 'required|exists:borrow_details,id',
             'details.*.condition' => 'required|in:good,damaged,lost',
+            'details.*.damage_level' => 'nullable|in:light,medium,heavy',
         ]);
 
         DB::transaction(function () use ($request, $borrow) {
 
             $today = Carbon::today();
             $dueDate = Carbon::parse($borrow->due_date);
-            $lateDays = $today->gt($dueDate) ? $today->diffInDays($dueDate) : 0;
+
+            $lateDays = $today->gt($dueDate)
+                ? $today->diffInDays($dueDate)
+                : 0;
+
+            $totalFine = 0;
 
             foreach ($request->details as $itemData) {
-                $detail = $borrow->details()->findOrFail($itemData['id']);
-                if (!$detail->return_requested) continue;
-                $bookItem = $detail->bookItem;
 
-                if ($detail->returned_at) continue;
+                $detail = $borrow->details()->findOrFail($itemData['id']);
+
+                if (!$detail->return_requested || $detail->returned_at) {
+                    continue;
+                }
+
+                $bookItem = $detail->bookItem;
 
                 $detail->update([
                     'returned_at' => $today,
@@ -231,16 +259,25 @@ class BorrowController extends Controller
                 ]);
 
                 switch ($itemData['condition']) {
+
                     case 'good':
                         $bookItem->update(['status' => 'available']);
                         break;
+
                     case 'damaged':
+
                         $bookItem->update(['status' => 'damaged']);
+
+                        $amount = match ($itemData['damage_level'] ?? 'medium') {
+                            'light' => 10000,
+                            'medium' => 20000,
+                            'heavy' => 50000,
+                        };
 
                         DamagedBook::create([
                             'borrow_detail_id' => $detail->id,
                             'book_item_id' => $bookItem->id,
-                            'damage_level' => 'medium', 
+                            'damage_level' => $itemData['damage_level'] ?? 'medium',
                             'description' => 'Buku rusak saat pengembalian',
                         ]);
 
@@ -248,43 +285,78 @@ class BorrowController extends Controller
                             'borrow_id' => $borrow->id,
                             'borrow_detail_id' => $detail->id,
                             'fine_type' => 'damage',
-                            'amount' => 20000,
+                            'amount' => $amount,
                             'note' => 'Buku rusak',
                         ]);
+
+                        $totalFine += $amount;
+
                         break;
+
                     case 'lost':
+
+                        $amount = 100000;
+
                         $bookItem->update(['status' => 'lost']);
+
                         Fine::create([
                             'borrow_id' => $borrow->id,
                             'borrow_detail_id' => $detail->id,
                             'fine_type' => 'lost',
-                            'amount' => 100000,
+                            'amount' => $amount,
                             'note' => 'Buku hilang',
                         ]);
+
+                        $totalFine += $amount;
+
                         break;
                 }
+            }
 
-                if ($lateDays > 0) {
+            $lateDays = $dueDate->diffInDays($today, false);
+
+            if ($lateDays > 0) {
+
+                $lateAmount = $lateDays * 5000;
+
+                foreach ($borrow->details as $detail) {
                     Fine::create([
                         'borrow_id' => $borrow->id,
                         'borrow_detail_id' => $detail->id,
                         'fine_type' => 'late',
-                        'amount' => $lateDays * 5000,
+                        'amount' => $lateAmount,
                         'note' => "Terlambat {$lateDays} hari",
                     ]);
                 }
+
+                $totalFine += $lateAmount;
+            }
+
+            if ($totalFine > 0) {
+
+                $borrow->user->notify(new UserNotification([
+                    'type' => 'fine',
+                    'title' => 'Denda',
+                    'message' => 'Total denda kamu Rp ' . number_format($totalFine),
+                    'borrow_id' => $borrow->id
+                ]));
             }
 
             $hasUnreturned = $borrow->details()->whereNull('returned_at')->exists();
 
-            if ($hasUnreturned) {
-                $borrow->status = now()->gt($borrow->due_date) ? 'overdue' : 'active';
-            } else {
-                $borrow->status = 'completed';
-            }
-
-            $borrow->save();
+            $borrow->update([
+                'status' => $hasUnreturned
+                    ? (now()->gt($borrow->due_date) ? 'overdue' : 'active')
+                    : 'completed'
+            ]);
         });
+
+        $borrow->user->notify(new UserNotification([
+            'type' => 'return_approved',
+            'title' => 'Pengembalian Disetujui',
+            'message' => 'Pengembalian buku berhasil diproses',
+            'borrow_id' => $borrow->id
+        ]));
 
         return back()->with('success', 'Pengembalian berhasil diproses');
     }

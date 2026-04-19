@@ -3,12 +3,6 @@
 @section('title', 'Dashboard')
 
 @php
-    // =====================
-    // DUMMY DATA
-    // =====================
-    $users   = 12;
-    $loans   = 8;
-    $returns = 5;
 
     $logs = [
         (object)[
@@ -44,8 +38,8 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm text-white" style="background:#0B132B">
                 <div class="card-body">
-                    <h6 class="text-uppercase small opacity-75">Total Pengguna</h6>
-                    <h3 class="fw-bold mb-0">{{ $users }}</h3>
+                    <h6 class="text-uppercase small opacity-75">Total Buku</h6>
+<h3 class="fw-bold mb-0">{{ $totalBooks }}</h3>
                 </div>
             </div>
         </div>
@@ -53,8 +47,8 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm text-white" style="background:#2D6A4F">
                 <div class="card-body">
-                    <h6 class="text-uppercase small opacity-75">Total Peminjaman</h6>
-                    <h3 class="fw-bold mb-0">{{ $loans }}</h3>
+                    <h6 class="text-uppercase small opacity-75">Total Peminjaman Aktif</h6>
+<h3 class="fw-bold mb-0">{{ $activeLoans }}</h3>
                 </div>
             </div>
         </div>
@@ -62,8 +56,8 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm text-white" style="background:#74C69D">
                 <div class="card-body">
-                    <h6 class="text-uppercase small">Total Pengembalian</h6>
-                    <h3 class="fw-bold mb-0">{{ $returns }}</h3>
+                    <h6 class="text-uppercase small">Total Buku Rusak</h6>
+<h3 class="fw-bold mb-0">{{ $damagedBooks }}</h3>
                 </div>
             </div>
         </div>
@@ -77,7 +71,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-header border-0" style="background:#F8F9FA">
-                    <h6 class="fw-semibold mb-0 text-dark">Statistik Peminjaman</h6>
+                    <h6 class="fw-semibold mb-0 text-dark">Statistik Pengelolaan Buku</h6>
                 </div>
                 <div class="card-body">
                     <div style="height:300px">
@@ -118,9 +112,9 @@
     new Chart(document.getElementById('loanChart'), {
         type: 'bar',
         data: {
-            labels: ['Pengguna', 'Peminjaman', 'Pengembalian'],
+            labels: ['Total Buku', 'Peminjaman Aktif', 'Buku Rusak'],
             datasets: [{
-                data: [{{ $users }}, {{ $loans }}, {{ $returns }}],
+                data: [{{ $totalBooks }}, {{ $activeLoans }}, {{ $damagedBooks }}],
                 backgroundColor: [
                     'rgba(11,19,43,0.85)',   // Navy
                     'rgba(45,106,79,0.85)', // Forest Green

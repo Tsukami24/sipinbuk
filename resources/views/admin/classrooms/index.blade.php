@@ -15,7 +15,7 @@
         </a>
     </div>
 
-    @if(session('success'))
+    @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
@@ -31,28 +31,36 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($classrooms as $c)
+            @foreach ($classrooms as $c)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $c->name }}</td>
                     <td>{{ $c->major }}</td>
-                    <td>
-                        <a href="{{ route('admin.classrooms.edit', $c->id) }}"
-                           class="btn btn-primary btn-sm">
-                            Edit
-                        </a>
-
-                        <form action="{{ route('admin.classrooms.destroy', $c->id) }}"
-                              method="POST"
-                              class="d-inline">
-                            @csrf
-                            @method('DELETE')
-
-                            <button class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Hapus data ini?')">
-                                Hapus
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm border" data-bs-toggle="dropdown">
+                                &#x22EE;
                             </button>
-                        </form>
+
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.classrooms.edit', $c->id) }}">
+                                        Edit
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <form method="POST" action="{{ route('admin.classrooms.destroy', $c->id) }}"
+                                        onsubmit="return confirm('Apakah kelas ini ingin dihapus?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="dropdown-item text-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </td>
                 </tr>
             @endforeach
@@ -62,21 +70,21 @@
 @endsection
 
 @push('scripts')
-<script>
-$(document).ready(function () {
-    $('#classroomsTable').DataTable({
-        pageLength: 10,
-        lengthChange: true,
-        language: {
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-            paginate: {
-                previous: "‹",
-                next: "›"
-            }
-        }
-    });
-});
-</script>
+    <script>
+        $(document).ready(function() {
+            $('#classroomsTable').DataTable({
+                pageLength: 10,
+                lengthChange: true,
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                    paginate: {
+                        previous: "‹",
+                        next: "›"
+                    }
+                }
+            });
+        });
+    </script>
 @endpush

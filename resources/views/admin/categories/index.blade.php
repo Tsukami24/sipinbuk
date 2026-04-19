@@ -15,57 +15,68 @@
         </a>
     </div>
 
-<table class="table table-bordered table-striped" id="categoriesTable">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach($categories as $category)
-        <tr>
-            <td>{{ $loop->iteration }}</td>
-            <td>{{ $category->name }}</td>
-            <td>
-                <a href="{{ route('admin.categories.edit', $category->id) }}"
-                   class="btn btn-primary btn-sm">Edit</a>
+    <table class="table table-bordered table-striped" id="categoriesTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($categories as $category)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $category->name }}</td>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm border" data-bs-toggle="dropdown">
+                                &#x22EE;
+                            </button>
 
-                <form action="{{ route('admin.categories.destroy', $category->id) }}"
-                      method="POST"
-                      class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger btn-sm"
-                            onclick="return confirm('Hapus?')">
-                        Hapus
-                    </button>
-                </form>
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.categories.edit', $category->id) }}">
+                                        Edit
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}"
+                                        onsubmit="return confirm('Apakah kategori ini ingin dihapus?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="dropdown-item text-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endsection
 
 @push('scripts')
-<script>
-$(document).ready(function () {
-    $('#categoriesTable').DataTable({
-        pageLength: 10,
-        lengthChange: true,
-        language: {
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
-            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-            paginate: {
-                previous: "‹",
-                next: "›"
-            }
-        }
-    });
-});
-</script>
+    <script>
+        $(document).ready(function() {
+            $('#categoriesTable').DataTable({
+                pageLength: 10,
+                lengthChange: true,
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                    paginate: {
+                        previous: "‹",
+                        next: "›"
+                    }
+                }
+            });
+        });
+    </script>
 @endpush
-

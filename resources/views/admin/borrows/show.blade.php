@@ -93,6 +93,8 @@
                                                 <input type="hidden" name="details[0][id]" value="{{ $item->id }}">
                                                 <input type="hidden" name="details[0][condition]"
                                                     id="conditionInput-{{ $item->id }}" required>
+                                                <input type="hidden" name="details[0][damage_level]"
+                                                    id="damageLevelInput-{{ $item->id }}">
 
                                                 <div class="dropdown">
                                                     <button class="btn btn-outline-success dropdown-toggle w-100 text-start"
@@ -121,6 +123,39 @@
                                                             </a>
                                                         </li>
                                                     </ul>
+                                                </div>
+
+                                                <div id="damageLevelWrapper-{{ $item->id }}" style="display:none;"
+                                                    class="mt-2">
+                                                    <div class="dropdown">
+                                                        <button
+                                                            class="btn btn-outline-danger dropdown-toggle w-100 text-start"
+                                                            type="button" data-bs-toggle="dropdown"
+                                                            id="damageLevelButton-{{ $item->id }}">
+                                                            -- Pilih Tingkat Kerusakan --
+                                                        </button>
+
+                                                        <ul class="dropdown-menu w-100">
+                                                            <li>
+                                                                <a class="dropdown-item" href="#"
+                                                                    onclick="setDamageLevel('{{ $item->id }}', 'light', 'Ringan')">
+                                                                    Ringan
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="#"
+                                                                    onclick="setDamageLevel('{{ $item->id }}', 'medium', 'Sedang')">
+                                                                    Sedang
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="#"
+                                                                    onclick="setDamageLevel('{{ $item->id }}', 'heavy', 'Parah')">
+                                                                    Parah
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
 
                                                 <button class="btn btn-success btn-sm mt-2 w-100">
@@ -230,6 +265,17 @@
         function setCondition(itemId, value, text) {
             document.getElementById('conditionInput-' + itemId).value = value;
             document.getElementById('conditionButton-' + itemId).innerText = text;
+
+            if (value === 'damaged') {
+                document.getElementById('damageLevelWrapper-' + itemId).style.display = 'block';
+            } else {
+                document.getElementById('damageLevelWrapper-' + itemId).style.display = 'none';
+            }
+        }
+
+        function setDamageLevel(itemId, value, text) {
+            document.getElementById('damageLevelInput-' + itemId).value = value;
+            document.getElementById('damageLevelButton-' + itemId).innerText = text;
         }
     </script>
 @endpush
