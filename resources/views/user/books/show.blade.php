@@ -52,7 +52,7 @@
                             <div class="col-4">
                                 <div class="p-3 rounded-3 text-center" style="background: rgba(45,106,79,0.1);">
                                     <div class="fw-bold text-success">
-                                        {{ $book->pages ?? '-' }}
+                                        {{ $book->page ?? '-' }}
                                     </div>
                                     <small class="text-muted">Halaman</small>
                                 </div>
@@ -114,9 +114,28 @@
                         {{-- ACTION --}}
                         <div class="d-flex gap-2">
 
-                            <a href="{{ route('borrows.create.singleBook', $book->id) }}" class="btn btn-success flex-fill">
-                                Pinjam Buku
-                            </a>
+                            @php
+                                $available = $book->items->where('status', 'available')->count();
+                                $hasPending = \App\Models\Borrow::where('user_id', auth()->id())
+                                    ->where('status', 'pending')
+                                    ->exists();
+                            @endphp
+
+                            @if ($hasPending)
+                                <button class="btn btn-secondary flex-fill" disabled>
+                                    Kamu memiliki pengajuan peminjaman yang belum diproses
+                                </button>
+                            @elseif ($available > 0)
+                                <a href="{{ route('borrows.create.singleBook', $book->id) }}"
+                                    class="btn btn-success flex-fill">
+                                    Pinjam Buku
+                                </a>
+                            @else
+                                <button class="btn btn-secondary flex-fill" disabled>
+                                    Stok Habis
+                                </button>
+                            @endif
+
 
                             <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
                                 Kembali

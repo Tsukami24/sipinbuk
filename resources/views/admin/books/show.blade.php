@@ -41,6 +41,7 @@
 
                                 <div class="col-md-6">
                                     <p><strong>Tahun Terbit</strong><br>{{ $book->year }}</p>
+                                    <p><strong>Jumlah Halaman</strong><br>{{ $book->page ?? '-' }}</p>
                                     <p><strong>Deskripsi</strong><br>{{ $book->description ?? '-' }}</p>
                                 </div>
                             </div>

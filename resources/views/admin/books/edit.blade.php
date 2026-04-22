@@ -152,6 +152,18 @@
                                 </div>
                             </div>
 
+                            {{-- JUMLAH HALAMAN --}}
+                            <div class="col-md-3">
+                                <label class="form-label">Jumlah Halaman</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-success">
+                                        <i class="bi bi-journal-text"></i>
+                                    </span>
+                                    <input type="number" name="page" class="form-control border-success"
+                                        value="{{ old('page', $book->page) }}" required>
+                                </div>
+                            </div>
+
                             {{-- DESKRIPSI --}}
                             <div class="col-12">
                                 <label class="form-label">Deskripsi</label>

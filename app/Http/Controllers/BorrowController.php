@@ -40,12 +40,16 @@ class BorrowController extends Controller
     }
 
     // USER - HISTORY
-    public function history()
+    public function history(Request $request)
     {
-        $borrows = Borrow::with('details.bookItem.book')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
+        $query = Borrow::with('details.bookItem.book')
+            ->where('user_id', Auth::id());
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $borrows = $query->latest()->get();
 
         return view('user.borrows.history', compact('borrows'));
     }
@@ -81,6 +85,14 @@ class BorrowController extends Controller
     // USER - STORE BORROW
     public function store(Request $request)
     {
+        $hasPending = Borrow::where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($hasPending) {
+            return back()->with('error', 'Kamu masih memiliki pengajuan peminjaman yang belum diproses.');
+        }
+
         $request->validate([
             'borrow_date' => 'required|date',
             'due_date'    => 'required|date|after_or_equal:borrow_date',

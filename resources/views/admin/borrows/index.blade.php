@@ -9,6 +9,10 @@
             <h4 class="fw-bold mb-1">Data Transaksi</h4>
             <p class="text-muted mb-0">Manajemen data transaksi peminjaman buku</p>
         </div>
+
+        <a href="{{ route('admin.export.borrow') }}" class="btn btn-success">
+            Export Excel
+        </a>
     </div>
 
     <table class="table table-bordered table-striped" id="borrowsTable">
@@ -17,6 +21,7 @@
                 <th>No</th>
                 <th>Kode</th>
                 <th>Peminjam</th>
+                <th>Judul Buku</th>
                 <th>Tanggal Pinjam</th>
                 <th>Batas Kembali</th>
                 <th>Jumlah Buku</th>
@@ -33,6 +38,14 @@
                     <td>{{ $borrow->id }}</td>
 
                     <td>{{ $borrow->user->name }}</td>
+
+                    <td>
+                        @foreach ($borrow->details as $detail)
+                            <span class="badge bg-light text-dark border mb-1">
+                                {{ $detail->bookItem->book->title ?? '-' }}
+                            </span>
+                        @endforeach
+                    </td>
 
                     <td>{{ $borrow->borrow_date->format('d M Y') }}</td>
 

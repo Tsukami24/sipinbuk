@@ -2,27 +2,6 @@
 
 @section('title', 'Dashboard')
 
-@php
-
-    $logs = [
-        (object)[
-            'waktu_log' => '2026-02-01 10:15',
-            'action'    => 'Tambah Kategori',
-            'reason'    => 'Menambahkan kategori Buku Teknologi'
-        ],
-        (object)[
-            'waktu_log' => '2026-02-01 11:00',
-            'action'    => 'Peminjaman Buku',
-            'reason'    => 'User meminjam buku Laravel Dasar'
-        ],
-        (object)[
-            'waktu_log' => '2026-02-02 09:30',
-            'action'    => 'Pengembalian Buku',
-            'reason'    => 'Buku dikembalikan tepat waktu'
-        ],
-    ];
-@endphp
-
 @section('content')
 <div class="container-fluid">
 
@@ -82,24 +61,61 @@
         </div>
 
         {{-- ACTIVITY LOG --}}
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header border-0" style="background:#F8F9FA">
-                    <h6 class="fw-semibold mb-0 text-dark">Log Aktivitas</h6>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        @foreach ($logs as $log)
-                            <li class="list-group-item">
-                                <small class="text-muted">{{ $log->waktu_log }}</small>
-                                <div class="fw-semibold">{{ $log->action }}</div>
-                                <div class="small text-muted">{{ $log->reason }}</div>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
+        {{-- ACTIVITY LOG --}}
+<div class="col-lg-4">
+    <div class="card border-0 shadow-sm h-100">
+
+        {{-- HEADER --}}
+        <div class="card-header border-0" style="background:#F8F9FA">
+            <h6 class="fw-semibold mb-0 text-dark">
+                Log Aktivitas Terbaru
+            </h6>
         </div>
+
+        {{-- BODY --}}
+        <div class="card-body p-2" style="max-height: 420px; overflow-y:auto;">
+
+            @forelse ($logs as $log)
+                <div class="d-flex gap-2 p-2 border-bottom">
+
+                    {{-- ICON --}}
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width:38px;height:38px;background:#2D6A4F;color:#fff;">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                    </div>
+
+                    {{-- CONTENT --}}
+                    <div class="flex-grow-1">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="fw-semibold small text-dark">
+                                {{ $log->action }}
+                            </div>
+
+                            <small class="text-muted" style="font-size:11px;">
+                                {{ $log->waktu_log }}
+                            </small>
+                        </div>
+
+                        <div class="text-muted" style="font-size:12px;">
+                            {{ $log->reason }}
+                        </div>
+
+                    </div>
+
+                </div>
+            @empty
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3"></i>
+                    <div class="small mt-1">Tidak ada aktivitas</div>
+                </div>
+            @endforelse
+
+        </div>
+    </div>
+</div>
 
     </div>
 

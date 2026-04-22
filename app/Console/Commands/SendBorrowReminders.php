@@ -6,6 +6,7 @@ use App\Models\Borrow;
 use App\Notifications\UserNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SendBorrowReminders extends Command
 {
@@ -28,7 +29,10 @@ class SendBorrowReminders extends Command
      */
     public function handle()
     {
-        $borrows = Borrow::where('status', 'active')->get();
+        $borrows = Borrow::where('status', 'active')
+            ->where('due_date', '>=', now())
+            ->where('due_date', '<=', now()->addDay())
+            ->get();
 
         foreach ($borrows as $borrow) {
 
@@ -37,7 +41,7 @@ class SendBorrowReminders extends Command
             $diff = now()->diffInMinutes($due, false);
 
             $reminders = [
-                'h1'  => 1000,  // ~16-17 jam
+                'h1'  => 1000,  
                 'h5h' => 300,
                 'h1h' => 60,
                 'm30' => 30,
@@ -46,12 +50,12 @@ class SendBorrowReminders extends Command
             ];
 
             $tolerances = [
-                'h1'  => 720,  // 24 jam ± 720 menit (12 jam) - range 12-36 jam sebelum due
-                'h5h' => 180,  // 5 jam ± 180 menit (3 jam)
-                'h1h' => 60,   // 1 jam ± 60 menit (1 jam)
-                'm30' => 30,   // 30 menit ± 30 menit
-                'm15' => 15,   // 15 menit ± 15 menit
-                'm5'  => 5,    // 5 menit ± 5 menit
+                'h1'  => 60,
+                'h5h' => 30,
+                'h1h' => 30,
+                'm30' => 15,
+                'm15' => 10,
+                'm5'  => 5,
             ];
 
             foreach ($reminders as $type => $target) {
@@ -60,30 +64,28 @@ class SendBorrowReminders extends Command
                 // Cek apakah saat ini dalam rentang tolerance dari target
                 if ($diff >= ($target - $tolerance) && $diff <= ($target + $tolerance)) {
 
-                    // Cek apakah notifikasi sudah pernah dikirim ke user ini
-                    $exists = DB::table('notifications')
-                        ->where('notifiable_type', 'App\Models\User')
-                        ->where('notifiable_id', $borrow->user_id)
-                        ->where('type', 'reminder')
-                        ->whereRaw("JSON_EXTRACT(data, '$.type') = ?", [$type])
-                        ->whereRaw("JSON_EXTRACT(data, '$.borrow_id') = ?", [$borrow->id])
-                        ->exists();
+                    $log = DB::table('notification_logs')->firstOrCreate(
+                        ['borrow_id' => $borrow->id, 'reminder_type' => $type],
+                        ['reminder_type' => $type]
+                    );
 
-                    if ($exists) continue;
+                    if ($log->wasRecentlyCreated) {
+                        $borrow->user->notify(new UserNotification([
+                            'type' => 'reminder',
+                            'title' => 'Pengingat Pengembalian',
+                            'message' => match ($type) {
+                                'h1'  => 'Pengembalian H-1 hari lagi',
+                                'h5h' => 'Pengembalian 5 jam lagi',
+                                'h1h' => 'Pengembalian 1 jam lagi',
+                                'm30' => 'Pengembalian 30 menit lagi',
+                                'm5'  => 'Pengembalian 5 menit lagi',
+                                'm1'  => 'Pengembalian 1 menit lagi',
+                            },
+                            'borrow_id' => $borrow->id,
+                        ]));
 
-                    $borrow->user->notify(new UserNotification([
-                        'type' => 'reminder',
-                        'title' => 'Pengingat Pengembalian',
-                        'message' => match ($type) {
-                            'h1'  => 'Pengembalian H-1 hari lagi',
-                            'h5h' => 'Pengembalian 5 jam lagi',
-                            'h1h' => 'Pengembalian 1 jam lagi',
-                            'm30' => 'Pengembalian 30 menit lagi',
-                            'm5'  => 'Pengembalian 5 menit lagi',
-                            'm1'  => 'Pengembalian 1 menit lagi',
-                        },
-                        'borrow_id' => $borrow->id,
-                    ]));
+                        Log::info("Reminder sent for borrow {$borrow->id} ({$type}): " . $borrow->user->name);
+                    }
                 }
             }
         }

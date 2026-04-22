@@ -16,7 +16,8 @@ class Book extends Model
         'author',
         'publisher',
         'year',
-        'description'
+        'description',
+        'page',
     ];
 
     public function getStockAttribute()

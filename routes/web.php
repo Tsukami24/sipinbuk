@@ -6,42 +6,24 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\DamagedbookController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('user.landing');
-})->name('user.landing');
-
+Route::get('/', [LandingController::class, 'landing'])->name('user.landing');
 // AUTHENTICATION
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('password.request');
-
-Route::post('/forgot-password', [AuthController::class, 'sendOtp'])->name('forgot-password.send-otp');
-
-Route::get('/verify-otp', function () {
-    return view('auth.verify-otp');
-})->name('auth.verify-otp');
-
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp.submit');
-
-Route::get('/new-password', function () {
-    return view('auth.new-password');
-})->name('auth.new-password');
-
-Route::post('/new-password', [AuthController::class, 'updatePassword'])->name('auth.new-password.submit');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -105,6 +87,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Routes Crud Damaged Book
     Route::resource('damaged-books', DamagedbookController::class)
         ->only(['index', 'show', 'create', 'store', 'destroy']);
+
+    // Routes Export
+    Route::get('/export/borrows', [ExportController::class, 'exportBorrow'])
+        ->name('export.borrow');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -112,6 +98,13 @@ Route::middleware(['auth'])->group(function () {
     // User Home
     Route::get('/home', [HomeController::class, 'index'])
         ->name('user.home');
+
+    // Routes Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('user.profile');
+
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('user.password.edit');
+
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('user.password.update');
 
     // Routes Book
     Route::get('/books/{book}', function (\App\Models\Book $book) {

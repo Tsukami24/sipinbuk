@@ -40,6 +40,7 @@ class BookController extends Controller
             'publisher' => 'required',
             'year' => 'required|digits:4',
             'description' => 'nullable|string',
+            'page' => 'nullable|string',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5000'
         ]);
 
@@ -85,6 +86,7 @@ class BookController extends Controller
             'publisher' => 'required',
             'year' => 'required|digits:4',
             'description' => 'nullable|string',
+            'page' => 'nullable|string',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5000'
         ]);
 

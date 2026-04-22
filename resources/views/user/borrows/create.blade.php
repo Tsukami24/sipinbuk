@@ -119,11 +119,22 @@
                                     ← Kembali
                                 </a>
 
-                                <button class="btn btn-primary px-4 rounded-3 shadow-sm">
-                                    <i class="bi bi-send-check me-1"></i>
-                                    Ajukan Peminjaman
-                                </button>
+                                @php
+                                    $hasPending = \App\Models\Borrow::where('user_id', auth()->id())
+                                        ->where('status', 'pending')
+                                        ->exists();
+                                @endphp
 
+                                @if ($hasPending)
+                                    <button class="btn btn-secondary flex-fill" disabled>
+                                        Masih Ada Pengajuan
+                                    </button>
+                                @else
+                                    <button class="btn btn-primary px-4 rounded-3 shadow-sm">
+                                        <i class="bi bi-send-check me-1"></i>
+                                        Ajukan Peminjaman
+                                    </button>
+                                @endif
                             </div>
 
                         </form>
