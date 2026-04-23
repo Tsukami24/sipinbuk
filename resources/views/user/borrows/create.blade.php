@@ -21,22 +21,44 @@
                     {{-- BODY --}}
                     <div class="card-body p-4">
 
+                        @if ($errors->any())
+                            <div class="alert alert-danger rounded-3">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger rounded-3">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         <form action="{{ route('borrows.store') }}" method="POST">
                             @csrf
 
                             {{-- DATE ROW --}}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">Tanggal Pinjam</label>
-                                    <input type="date" name="borrow_date" class="form-control rounded-3"
-                                        value="{{ old('borrow_date', now()->toDateString()) }}" required>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tanggal Pinjam</label>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">Tanggal Pengembalian</label>
-                                    <input type="date" name="due_date" class="form-control rounded-3"
-                                        value="{{ old('due_date') }}" required>
-                                </div>
+                                <input type="date" class="form-control rounded-3 bg-light"
+                                    value="{{ now()->toDateString() }}" readonly
+                                    style="pointer-events: none; opacity: 0.8;">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tanggal Pengembalian</label>
+
+                                <input type="date" class="form-control rounded-3 bg-light"
+                                    value="{{ now()->addDays(7)->toDateString() }}" readonly
+                                    style="pointer-events: none; opacity: 0.8;">
+
+                                <small class="text-muted">
+                                    Otomatis 7 hari setelah tanggal peminjaman
+                                </small>
                             </div>
 
                             {{-- BOOK LIST --}}
@@ -94,28 +116,33 @@
 
                             {{-- QUANTITY --}}
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">
-                                    Jumlah per Buku
-                                </label>
+                                <div class="p-3 rounded-3 mb-0"
+                                    style="background: rgba(116, 198, 157, 0.15); border: 1px solid rgba(45, 106, 79, 0.2);">
 
-                                <div class="input-group">
-                                    <span class="input-group-text bg-success text-white">
-                                        <i class="bi bi-stack"></i>
-                                    </span>
+                                    <div class="d-flex align-items-start gap-2">
 
-                                    <input type="number" name="quantity" class="form-control"
-                                        value="{{ old('quantity', 1) }}" min="1" required>
+                                        <i class="bi bi-info-circle-fill text-success mt-1"></i>
+
+                                        <div>
+                                            <div class="fw-semibold text-dark">
+                                                Informasi Peminjaman
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Maksimal peminjaman 1 buku per judul dan maksimal 2 buku berbeda per
+                                                peminjaman.
+                                            </small>
+                                        </div>
+
+                                    </div>
+
                                 </div>
-
-                                <small class="text-muted">
-                                    Sistem akan memilih unit buku yang tersedia secara otomatis
-                                </small>
                             </div>
 
                             {{-- BUTTON --}}
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
 
-                                <a href="{{ route('user.home') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('user.home') }}" class="btn btn-outline-secondary px-4 rounded-3">
                                     ← Kembali
                                 </a>
 
@@ -126,7 +153,7 @@
                                 @endphp
 
                                 @if ($hasPending)
-                                    <button class="btn btn-secondary flex-fill" disabled>
+                                    <button class="btn btn-secondary px-4 rounded-3" disabled>
                                         Masih Ada Pengajuan
                                     </button>
                                 @else
@@ -135,8 +162,8 @@
                                         Ajukan Peminjaman
                                     </button>
                                 @endif
-                            </div>
 
+                            </div>
                         </form>
                     </div>
 

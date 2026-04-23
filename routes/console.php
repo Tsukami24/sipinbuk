@@ -11,3 +11,4 @@ Artisan::command('inspire', function () {
 Schedule::command('reminder:borrow')->everyFifteenMinutes();
 Schedule::command('fine:check')->hourly();
 Schedule::command('report:generate')->daily();
+Schedule::command('app:update-borrow-status')->daily();

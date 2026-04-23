@@ -40,7 +40,12 @@
                 </span>
 
                 <input type="text" name="search" value="{{ request('search') }}"
-                    class="form-control border-0 shadow-none" placeholder="Cari buku, penulis...">
+                    class="form-control border-0 shadow-none" placeholder="Cari buku, penulis..."
+                    onkeyup="clearTimeout(this.delay); this.delay = setTimeout(() => this.form.submit(), 500)">
+
+                {{-- penting biar filter gak hilang --}}
+                <input type="hidden" name="category" value="{{ request('category') }}">
+                <input type="hidden" name="subcategory" value="{{ request('subcategory') }}">
 
                 @if (request('search'))
                     <a href="{{ route('user.home') }}" class="btn btn-light border-0">
@@ -49,7 +54,6 @@
                 @endif
 
             </div>
-
         </form>
 
         {{-- RIGHT SIDE --}}
@@ -87,7 +91,7 @@
                             <hr class="dropdown-divider m-0">
                         </li>
 
-                        {{-- BODY (SCROLL AREA) --}}
+                        {{-- BODY SCROLL --}}
                         <div class="notif-body">
 
                             @forelse(auth()->user()->unreadNotifications->take(10) as $notif)
@@ -112,7 +116,7 @@
 
                         </div>
 
-                        {{-- FOOTER (FIXED) --}}
+                        {{--  FOOTER  --}}
                         <li class="notif-footer">
                             <hr class="dropdown-divider m-0">
 
@@ -238,33 +242,33 @@
     }
 
     .notif-dropdown {
-    width: 320px;
-}
+        width: 320px;
+    }
 
-.notif-header {
-    background: #fff;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
+    .notif-header {
+        background: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
 
-.notif-body {
-    max-height: 300px;
-    overflow-y: auto;
-}
+    .notif-body {
+        max-height: 300px;
+        overflow-y: auto;
+    }
 
-.notif-footer {
-    background: #fff;
-    position: sticky;
-    bottom: 0;
-}
+    .notif-footer {
+        background: #fff;
+        position: sticky;
+        bottom: 0;
+    }
 
-.notif-body::-webkit-scrollbar {
-    width: 6px;
-}
+    .notif-body::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.notif-body::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
+    .notif-body::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
 </style>

@@ -37,4 +37,27 @@ class Borrow extends Model
             BorrowDetail::class
         );
     }
+
+    public function getStatusLabelAttribute()
+    {
+        return match ($this->status) {
+            'active' => 'Sedang Dipinjam',
+            'completed' => 'Selesai',
+            'overdue' => 'Terlambat',
+            'pending' => 'Menunggu Persetujuan',
+            'rejected' => 'Ditolak',
+            default => ucfirst($this->status),
+        };
+    }
+    public function getStatusBadgeAttribute()
+    {
+        return match ($this->status) {
+            'active' => 'bg-warning text-dark',
+            'completed' => 'bg-success',
+            'overdue' => 'bg-danger',
+            'pending' => 'bg-secondary',
+            'rejected' => 'bg-dark',
+            default => 'bg-secondary',
+        };
+    }
 }

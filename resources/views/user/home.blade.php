@@ -56,6 +56,7 @@
 
         </div>
 
+        {{-- SEARCH BAR --}}
         @if (request('search'))
             <div class="alert alert-light border d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -230,28 +231,28 @@
             }
 
             .book-card {
-                    border-radius: 12px;
-                    overflow: hidden;
-                    transition: 0.2s;
-                }
+                border-radius: 12px;
+                overflow: hidden;
+                transition: 0.2s;
+            }
 
-                .book-card:hover {
-                    transform: translateY(-4px);
-                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-                }
+            .book-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
 
-                .book-cover {
-                    width: 100%;
-                    aspect-ratio: 2 / 3;
-                    overflow: hidden;
-                    background: #f8f9fa;
-                }
+            .book-cover {
+                width: 100%;
+                aspect-ratio: 2 / 3;
+                overflow: hidden;
+                background: #f8f9fa;
+            }
 
-                .book-cover img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
+            .book-cover img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
 
             .book-desc {
                 font-size: 0.75rem;

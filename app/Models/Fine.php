@@ -19,4 +19,24 @@ class Fine extends Model
     {
         return $this->belongsTo(BorrowDetail::class);
     }
+
+    public function getFineTypeLabelAttribute()
+    {
+        return match ($this->fine_type) {
+            'late' => 'Terlambat',
+            'damaged' => 'Rusak',
+            'lost' => 'Hilang',
+            default => ucfirst($this->fine_type),
+        };
+    }
+
+    public function getFineBadgeAttribute()
+    {
+        return match ($this->fine_type) {
+            'late' => 'bg-warning text-dark',
+            'damaged' => 'bg-danger',
+            'lost' => 'bg-dark',
+            default => 'bg-secondary',
+        };
+    }
 }

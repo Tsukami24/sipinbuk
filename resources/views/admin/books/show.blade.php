@@ -63,8 +63,10 @@
                     <form method="POST" action="{{ route('admin.books.items.store', $book->id) }}">
                         @csrf
 
-                        <div class="row g-3">
-                            <div class="col-md-5">
+                        <div class="row g-3 align-items-end">
+
+                            {{-- KODE BUKU --}}
+                            <div class="col-md-9">
                                 <label class="form-label">Kode Buku</label>
 
                                 <div class="input-group">
@@ -77,37 +79,14 @@
                                 </div>
                             </div>
 
-
-                            <div class="col-md-4">
-                                <label class="form-label">Status</label>
-
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-success dropdown-toggle w-100 text-start" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false" id="statusButton">
-                                        Available
-                                    </button>
-
-                                    <ul class="dropdown-menu w-100">
-                                        @foreach ($statuses as $value => $status)
-                                            <li>
-                                                <a class="dropdown-item" href="#"
-                                                    onclick="setStatus('{{ $value }}', '{{ $status }}')">
-                                                    {{ $status }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-
-                                <input type="hidden" name="status" id="statusInput" value="available">
-                            </div>
-
-
-                            <div class="col-md-3 d-flex align-items-end">
+                            <div class="col-md-3">
                                 <button class="btn btn-success w-100">
-                                    Tambah Unit
+                                    <i class="bi bi-plus-circle me-1"></i> Tambah Unit
                                 </button>
                             </div>
+
+                            <input type="hidden" name="status" value="available">
+
                         </div>
                     </form>
                 </div>

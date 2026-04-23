@@ -85,6 +85,29 @@ class BorrowController extends Controller
     // USER - STORE BORROW
     public function store(Request $request)
     {
+        // 1 sistem cek peminjaman aktif, denda belum bayar, dan pengajuan pending user
+
+        // masih punya peminjaman aktif
+        $hasActiveBorrow = Borrow::where('user_id', Auth::id())
+            ->whereIn('status', ['pending', 'active', 'overdue'])
+            ->exists();
+
+        if ($hasActiveBorrow) {
+            return back()->with('error', 'Kamu masih memiliki peminjaman aktif.');
+        }
+
+        // masih punya denda belum dibayar
+        $hasUnpaidFine = Fine::whereHas('borrowDetail.borrow', function ($q) {
+            $q->where('user_id', Auth::id());
+        })
+            ->where('is_paid', false)
+            ->exists();
+
+        if ($hasUnpaidFine) {
+            return back()->with('error', 'Kamu masih memiliki denda yang belum dibayar.');
+        }
+
+        // masih ada pengajuan pending
         $hasPending = Borrow::where('user_id', Auth::id())
             ->where('status', 'pending')
             ->exists();
@@ -93,17 +116,36 @@ class BorrowController extends Controller
             return back()->with('error', 'Kamu masih memiliki pengajuan peminjaman yang belum diproses.');
         }
 
+        // Validasi input buku
         $request->validate([
-            'borrow_date' => 'required|date',
-            'due_date'    => 'required|date|after_or_equal:borrow_date',
-            'book_ids'    => 'required|array|min:1',
-            'book_ids.*'  => 'exists:books,id',
-            'quantity'    => 'required|integer|min:1',
+            'book_ids'   => 'required|array|min:1|max:2',
+            'book_ids.*' => 'exists:books,id',
+        ], [
+            'book_ids.required' => 'Pilih minimal 1 buku.',
+            'book_ids.array'    => 'Format buku tidak valid.',
+            'book_ids.min'      => 'Minimal pilih 1 buku.',
+            'book_ids.max'      => 'Maksimal hanya 2 buku per peminjaman.',
+            'book_ids.*.exists' => 'Buku tidak valid.',
         ]);
 
+        if (count($request->book_ids) > 2) {
+            return back()->with('error', 'Maksimal peminjaman hanya 2 buku berbeda.');
+        }
+
+        $bookIds = $request->book_ids;
+
+        if (count($bookIds) > 2) {
+            return back()->with('error', 'Maksimal peminjaman hanya 2 buku berbeda.');
+        }
+
+        if (count($bookIds) !== count(array_unique($bookIds))) {
+            return back()->with('error', 'Tidak boleh memilih buku yang sama lebih dari sekali.');
+        }
+        // Proses transaksi peminjaman
         DB::transaction(function () use ($request) {
-            $borrowDate = Carbon::parse($request->borrow_date);
-            $dueDate    = Carbon::parse($request->due_date);
+
+            $borrowDate = Carbon::today();
+            $dueDate = $borrowDate->copy()->addDays(7);
 
             $borrow = Borrow::create([
                 'user_id'     => Auth::id(),
@@ -112,25 +154,22 @@ class BorrowController extends Controller
                 'status'      => 'pending',
             ]);
 
+            // Proses sistem pengembalian buku
             foreach ($request->book_ids as $bookId) {
-                $quantity = $request->quantity;
 
-                $availableItems = BookItem::where('book_id', $bookId)
+                $availableItem = BookItem::where('book_id', $bookId)
                     ->where('status', 'available')
-                    ->limit($quantity)
                     ->lockForUpdate()
-                    ->get();
+                    ->first();
 
-                if ($availableItems->count() < $quantity) {
-                    throw new \Exception("Buku dengan ID {$bookId} tidak cukup tersedia.");
+                if (!$availableItem) {
+                    throw new \Exception("Buku tidak tersedia untuk ID {$bookId}");
                 }
 
-                foreach ($availableItems as $item) {
-                    BorrowDetail::create([
-                        'borrow_id'    => $borrow->id,
-                        'book_item_id' => $item->id,
-                    ]);
-                }
+                BorrowDetail::create([
+                    'borrow_id'    => $borrow->id,
+                    'book_item_id' => $availableItem->id,
+                ]);
             }
         });
 
@@ -183,24 +222,6 @@ class BorrowController extends Controller
         ]));
 
         return back()->with('success', 'Peminjaman ditolak');
-    }
-
-    // ADMIN - UPDATE DUE DATE
-    public function updateDueDate(Request $request, Borrow $borrow)
-    {
-        if ($borrow->status !== 'pending') {
-            return back()->with('error', 'Due date hanya bisa diubah saat menunggu persetujuan');
-        }
-
-        $request->validate([
-            'due_date' => 'required|date|after_or_equal:' . $borrow->borrow_date,
-        ]);
-
-        $borrow->update([
-            'due_date' => $request->due_date
-        ]);
-
-        return back()->with('success', 'Due date berhasil diubah');
     }
 
     // USER - AJUKAN PENGEMBALIAN

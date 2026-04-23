@@ -26,14 +26,8 @@
                         <div class="col-md-6">
                             <p>
                                 <strong>Status</strong><br>
-                                <span
-                                    class="badge
-                                {{ $borrow->status === 'active'
-                                    ? 'bg-warning text-dark'
-                                    : ($borrow->status === 'completed'
-                                        ? 'bg-success'
-                                        : 'bg-secondary') }}">
-                                    {{ ucfirst($borrow->status) }}
+                                <span class="badge {{ $borrow->status_badge }}">
+                                    {{ $borrow->status_label }}
                                 </span>
                             </p>
 
@@ -206,14 +200,8 @@
                                                 class="text-muted">{{ $fine->borrowDetail->bookItem->book_code }}</small>
                                         </td>
                                         <td>
-                                            <span
-                                                class="badge
-                                    {{ $fine->fine_type === 'late'
-                                        ? 'bg-warning text-dark'
-                                        : ($fine->fine_type === 'damaged'
-                                            ? 'bg-danger'
-                                            : 'bg-dark') }}">
-                                                {{ ucfirst($fine->fine_type) }}
+                                            <span class="badge {{ $fine->fine_badge }}">
+                                                {{ $fine->fine_type_label }}
                                             </span>
                                         </td>
                                         <td>Rp {{ number_format($fine->amount, 0, ',', '.') }}</td>

@@ -20,12 +20,18 @@ class HomeController extends Controller
 
         // SEARCH
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
 
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('author', 'like', "%{$search}%")
-                    ->orWhere('publisher', 'like', "%{$search}%");
+            $keywords = explode(' ', $search);
+
+            $query->where(function ($q) use ($keywords) {
+                foreach ($keywords as $word) {
+                    $q->where(function ($sub) use ($word) {
+                        $sub->where('title', 'like', "%{$word}%")
+                            ->orWhere('author', 'like', "%{$word}%")
+                            ->orWhere('publisher', 'like', "%{$word}%");
+                    });
+                }
             });
         }
 

@@ -11,33 +11,50 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class BorrowExport implements FromCollection, WithHeadings, WithStyles, ShouldAutoSize
 {
+    protected $status, $startDate, $endDate;
+
+    public function __construct($status = null, $startDate = null, $endDate = null)
+    {
+        $this->status = $status;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+    }
+
     public function collection()
     {
-        return Borrow::with([
+        $query = Borrow::with([
             'user',
             'details.bookItem.book.category',
             'details.bookItem.book.subcategory'
-        ])
-            ->get()
-            ->flatMap(function ($borrow) {
+        ]);
 
-                return $borrow->details->map(function ($detail) use ($borrow) {
+        // FILTER STATUS
+        if ($this->status) {
+            $query->where('status', $this->status);
+        }
 
-                    return [
-                        $borrow->id,
-                        $borrow->user->name ?? '-',
-                        $borrow->user->nis ?? '-',
-                        $detail->bookItem->book->title ?? '-',
-                        $detail->bookItem->book->category->name ?? '-',
-                        $detail->bookItem->book->subcategory->name ?? '-',
-                        $borrow->status,
-                        $borrow->borrow_date,
-                        $borrow->due_date,
-                        $detail->return_condition ?? '-',
-                        $detail->returned_at ?? '-',
-                    ];
-                });
+        // FILTER TANGGAL
+        if ($this->startDate && $this->endDate) {
+            $query->whereBetween('borrow_date', [$this->startDate, $this->endDate]);
+        }
+
+        return $query->get()->flatMap(function ($borrow) {
+            return $borrow->details->map(function ($detail) use ($borrow) {
+                return [
+                    $borrow->id,
+                    $borrow->user->name ?? '-',
+                    $borrow->user->nis ?? '-',
+                    $detail->bookItem->book->title ?? '-',
+                    $detail->bookItem->book->category->name ?? '-',
+                    $detail->bookItem->book->subcategory->name ?? '-',
+                    $borrow->status,
+                    optional($borrow->borrow_date)->format('Y-m-d'),
+                    optional($borrow->due_date)->format('Y-m-d'),
+                    $detail->return_condition ?? '-',
+                    $detail->returned_at ?? '-',
+                ];
             });
+        });
     }
 
     public function headings(): array
@@ -63,12 +80,12 @@ class BorrowExport implements FromCollection, WithHeadings, WithStyles, ShouldAu
             1 => [
                 'font' => [
                     'bold' => true,
-                    'color' => ['rgb' => '000000'],
+                    'color' => ['rgb' => 'FFFFFF'],
                 ],
                 'fill' => [
                     'fillType' => 'solid',
                     'startColor' => [
-                        'rgb' => 'FFFFFF'
+                        'rgb' => '2D6A4F'
                     ]
                 ],
             ],
