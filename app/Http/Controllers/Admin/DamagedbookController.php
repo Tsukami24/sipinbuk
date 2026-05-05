@@ -50,7 +50,6 @@ class DamagedbookController extends Controller
 
         $bookItem = BookItem::findOrFail($request->book_item_id);
 
-        // update status buku jadi damaged
         $bookItem->update(['status' => 'damaged']);
 
         DamagedBook::create([
@@ -69,10 +68,8 @@ class DamagedbookController extends Controller
     {
         $bookItem = $damagedBook->bookItem;
 
-        // hapus data buku rusak
         $damagedBook->delete();
 
-        // balikin status buku jadi available
         $bookItem->update([
             'status' => 'available'
         ]);

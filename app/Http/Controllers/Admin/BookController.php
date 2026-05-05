@@ -90,8 +90,6 @@ class BookController extends Controller
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5000'
         ]);
 
-
-        // ganti cover yang lama
         if ($request->hasFile('cover')) {
             if ($book->cover) {
                 Storage::disk('public')->delete($book->cover);

@@ -88,7 +88,6 @@
             object-fit: cover;
         }
 
-        /* CTA */
         .cta {
             background: #2D6A4F;
             color: #fff;

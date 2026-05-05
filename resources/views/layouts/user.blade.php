@@ -21,9 +21,7 @@
             flex-direction: column;
         }
 
-        /* =============================
-           NAVBAR
-        ============================= */
+        /* NAVBAR */
         .user-navbar {
             background-color: #0B132B;
             padding: 0 24px;
@@ -123,25 +121,19 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28116, 198, 157, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
-        /* =============================
-           MAIN CONTENT
-        ============================= */
+        /* MAIN CONTENT */
         .user-content {
             flex: 1;
             padding: 28px 0;
         }
 
-        /* =============================
-           FLASH MESSAGES
-        ============================= */
+        /* FLASH MESSAGES */
         .alert {
             border-radius: 8px;
             font-size: 0.9rem;
         }
 
-        /* =============================
-           FORM FOCUS THEME
-        ============================= */
+        /* FORM FOCUS THEME */
         .form-control:focus,
         .form-select:focus {
             border-color: #2D6A4F !important;
@@ -165,9 +157,7 @@
             border-color: #2D6A4F !important;
         }
 
-        /* =============================
-           BUTTONS THEME
-        ============================= */
+        /* BUTTONS THEME */
         .btn-primary {
             background-color: #2D6A4F;
             border-color: #2D6A4F;
@@ -190,9 +180,7 @@
             color: #fff;
         }
 
-        /* =============================
-           TEXT SELECTION
-        ============================= */
+        /* TEXT SELECTION */
         ::selection {
             background-color: rgba(45, 106, 79, 0.35);
             color: #0B132B;
@@ -203,9 +191,7 @@
             color: #0B132B;
         }
 
-        /* =============================
-           FOOTER
-        ============================= */
+        /* FOOTER */
         .user-footer {
             background-color: #0B132B;
             color: rgba(248, 249, 250, 0.5);

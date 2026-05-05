@@ -43,7 +43,6 @@
                     class="form-control border-0 shadow-none" placeholder="Cari buku, penulis..."
                     onkeyup="clearTimeout(this.delay); this.delay = setTimeout(() => this.form.submit(), 500)">
 
-                {{-- penting biar filter gak hilang --}}
                 <input type="hidden" name="category" value="{{ request('category') }}">
                 <input type="hidden" name="subcategory" value="{{ request('subcategory') }}">
 

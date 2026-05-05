@@ -33,7 +33,7 @@
                             {{-- FORM --}}
                             <div class="col-md-8">
 
-                                {{-- TITLE (DI BODY, SESUAI REQUEST) --}}
+                                {{-- TITLE  --}}
                                 <h5 class="fw-bold text-dark mb-1">
                                     {{ $book->title }}
                                 </h5>

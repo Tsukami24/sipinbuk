@@ -61,7 +61,6 @@
         </div>
 
         {{-- ACTIVITY LOG --}}
-        {{-- ACTIVITY LOG --}}
 <div class="col-lg-4">
     <div class="card border-0 shadow-sm h-100">
 
@@ -132,9 +131,9 @@
             datasets: [{
                 data: [{{ $totalBooks }}, {{ $activeLoans }}, {{ $damagedBooks }}],
                 backgroundColor: [
-                    'rgba(11,19,43,0.85)',   // Navy
-                    'rgba(45,106,79,0.85)', // Forest Green
-                    'rgba(116,198,157,0.85)'// Mint
+                    'rgba(11,19,43,0.85)',  
+                    'rgba(45,106,79,0.85)',
+                    'rgba(116,198,157,0.85)'
                 ],
                 borderRadius: 6
             }]

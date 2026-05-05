@@ -15,7 +15,6 @@
 
             <div class="card-body">
 
-                {{-- ERROR --}}
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">

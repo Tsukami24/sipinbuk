@@ -6,9 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
 
-            {{-- ========================= --}}
             {{-- DETAIL BUKU --}}
-            {{-- ========================= --}}
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header text-white" style="background-color:#0B132B;">
                     <h5 class="mb-0">Detail Buku</h5>
@@ -51,9 +49,7 @@
                 </div>
             </div>
 
-            {{-- ========================= --}}
             {{-- TAMBAH UNIT BUKU --}}
-            {{-- ========================= --}}
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header text-white" style="background-color:#0B132B;">
                     <h5 class="mb-0">Tambah Unit Buku</h5>
@@ -92,9 +88,7 @@
                 </div>
             </div>
 
-            {{-- ========================= --}}
             {{-- DAFTAR UNIT BUKU --}}
-            {{-- ========================= --}}
             <div class="card shadow-sm border-0">
                 <div class="card-header text-white" style="background-color:#0B132B;">
                     <h5 class="mb-0">Daftar Unit Buku</h5>

@@ -182,13 +182,11 @@
             border-color: #2D6A4F !important;
         }
 
-        /* saat hover */
         .btn-primary:hover {
             background-color: #245a41 !important;
             border-color: #245a41 !important;
         }
 
-        /* saat klik / aktif */
         .btn-primary:active,
         .btn-primary:focus,
         .btn-primary:focus:active,

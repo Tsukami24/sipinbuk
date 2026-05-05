@@ -13,7 +13,6 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-
     <style>
         body {
             background-color: #F8F9FA;
@@ -123,9 +122,6 @@
             color: #DC3545 !important;
         }
 
-        /* =============================
-   FORM FOCUS THEME
-============================= */
         .form-control:focus,
         .form-select:focus {
             border-color: #2D6A4F !important;
@@ -137,9 +133,6 @@
             border-color: #2D6A4F !important;
         }
 
-        /* =============================
-   FORM THEME - NO BLUE
-============================= */
         .form-control:focus,
         .form-select:focus {
             border-color: #2D6A4F !important;
@@ -147,9 +140,6 @@
             outline: none !important;
         }
 
-        /* =============================
-   SELECT OPTION FIX (KILL BLUE)
-============================= */
         .form-select option:checked,
         .form-select option:active {
             background-color: #2D6A4F !important;
@@ -162,19 +152,15 @@
         }
 
         .form-select {
-    background-color: #fff;
-    color: #0B132B;
-}
+            background-color: #fff;
+            color: #0B132B;
+        }
 
-.form-select:focus {
-    border-color: #2D6A4F !important;
-    box-shadow: 0 0 0 0.15rem rgba(45, 106, 79, 0.25) !important;
-}
+        .form-select:focus {
+            border-color: #2D6A4F !important;
+            box-shadow: 0 0 0 0.15rem rgba(45, 106, 79, 0.25) !important;
+        }
 
-
-        /* =============================
-   TEXT SELECTION
-============================= */
         ::selection {
             background-color: rgba(45, 106, 79, 0.35);
             color: #0B132B;
@@ -185,9 +171,6 @@
             color: #0B132B;
         }
 
-        /* =============================
-   FIREFOX SELECT FIX
-============================= */
         select:-moz-focusring {
             color: transparent;
             text-shadow: 0 0 0 #0B132B;

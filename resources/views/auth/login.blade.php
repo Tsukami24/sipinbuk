@@ -165,12 +165,6 @@
                                     <input type="password" name="password" class="form-control" required>
                                 </div>
 
-                                {{-- <div class="d-flex justify-content-end mb-2">
-                                    <a href="{{ route('password.request') }}" style="font-size:0.8rem;">
-                                        Lupa Password?
-                                    </a>
-                                </div> --}}
-
                                 <button type="submit" class="btn btn-primary w-100 mt-2">
                                     Login
                                 </button>

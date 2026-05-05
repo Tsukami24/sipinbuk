@@ -16,11 +16,9 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <p><strong>Nama Peminjam</strong><br>{{ $borrow->user->name }}</p>
-                            <p><strong>Tanggal
-                                    Pinjam</strong><br>{{ \Carbon\Carbon::parse($borrow->borrow_date)->format('d M Y') }}
+                            <p><strong>Tanggal Pinjam</strong><br>{{ \Carbon\Carbon::parse($borrow->borrow_date)->format('d M Y') }}
                             </p>
-                            <p><strong>Jatuh
-                                    Tempo</strong><br>{{ \Carbon\Carbon::parse($borrow->due_date)->format('d M Y') }}</p>
+                            <p><strong>Jatuh Tempo</strong><br>{{ \Carbon\Carbon::parse($borrow->due_date)->format('d M Y') }}</p>
                         </div>
 
                         <div class="col-md-6">

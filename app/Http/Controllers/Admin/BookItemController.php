@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 
 class BookItemController extends Controller
 {
+    // Store New Book Item
     public function store(Request $request, Book $book)
     {
         $request->validate([
@@ -24,16 +25,18 @@ class BookItemController extends Controller
         return back()->with('success', 'Unit buku ditambahkan');
     }
 
-    public function update(Request $request, Book $book, BookItem $item)
-    {
-        $item->update([
-            'book_code' => $request->book_code,
-            'status' => $request->status
-        ]);
+    // Update Book Item
+    // public function update(Request $request, Book $book, BookItem $item)
+    // {
+    //     $item->update([
+    //         'book_code' => $request->book_code,
+    //         'status' => $request->status
+    //     ]);
 
-        return back()->with('success', 'Unit buku diperbarui');
-    }
+    //     return back()->with('success', 'Unit buku diperbarui');
+    // }
 
+    // Delete Book Item
     public function destroy(Book $book, BookItem $item)
     {
         $item->delete();
